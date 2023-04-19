@@ -11,7 +11,7 @@ class todoList extends StatefulWidget {
 class _TodoListState extends State<todoList> {
   List<Todo> _listTodo = [];
 
-  Repository _repository = Repository();
+  final Repository _repository = Repository();
 
   void _getData() async {
     _listTodo = await _repository.getData();
