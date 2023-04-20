@@ -39,7 +39,7 @@ class _AccountDetailState extends State<AccountDetail> {
   Future<void> uploadImage() async {
     if (_image != null) {
       var headers = {
-        'Authorization': 'Bearer 70fb83282fffd7d41732cf66c682bb75be896638'
+        'Authorization': 'Bearer 70fb83282fffd7d41732cf66c682bb75be896638',
       };
       var request = http.MultipartRequest(
           'POST', Uri.parse('https://api.imgur.com/3/image'));

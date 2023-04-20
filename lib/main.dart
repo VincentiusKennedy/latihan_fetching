@@ -1,76 +1,69 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:latihan_post/screen/account.dart';
+import 'package:http/http.dart' as http;
+import 'package:latihan_post/screen/homePage.dart';
+import 'package:latihan_post/screen/loginPage.dart';
+import 'package:latihan_post/screen/registerPage.dart';
 import 'package:latihan_post/screen/todoAdd.dart';
 import 'package:latihan_post/screen/todoList.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  Widget initialScreen = LoginPage();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
+
+  if (token != null) {
+    Map<String, dynamic> userData = await checkToken(token);
+    if (userData.isNotEmpty) {
+      initialScreen = Homepage(userData: userData);
+      print(userData); // <-- mengirimkan parameter userData
+    } else {
+      initialScreen = LoginPage();
+      await prefs.remove('token');
+    }
+  }
+
+  runApp(MyApp(initialScreen: initialScreen));
+}
+
+Future<Map<String, dynamic>> checkToken(String token) async {
+  String url =
+      Platform.isAndroid ? 'http://192.168.1.2:3000' : 'http://localhost:3000';
+
+  final response = await http
+      .get(Uri.parse('$url/me'), headers: {'Authorization': 'Bearer $token'});
+
+  if (response.statusCode == 200) {
+    final userData = json.decode(response.body)['data']['user'];
+    return userData;
+  } else {
+    return {};
+  }
+}
 
 class MyApp extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  final Widget initialScreen;
+
+  MyApp({Key? key, required this.initialScreen}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
       title: 'My Flutter App',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('My Flutter App'),
-          leading: Builder(
-            builder: (BuildContext context) {
-              return IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () {
-                  Scaffold.maybeOf(context)?.openDrawer();
-                },
-              );
-            },
-          ),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
-                child: Text(
-                  'Menu',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.account_circle),
-                title: const Text('Akun'),
-                onTap: () {
-                  Navigator.pushNamed(
-                      navigatorKey.currentContext!, '/accountDetail');
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Pengaturan'),
-                onTap: () {
-                  // navigasi ke halaman pengaturan
-                },
-              ),
-            ],
-          ),
-        ),
-        body: todoList(),
-      ),
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
       routes: {
+        '/': (context) => initialScreen,
         '/addTodo': (context) => const todoAdd(),
-        '/accountDetail': (context) => const AccountDetail(
-              profileImage:
-                  'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
-              name: 'Nama Pengguna',
-              dateOfBirth: '01 Januari 2000',
-            ),
+        '/login': (context) => LoginPage(),
+        '/homePage': (context) => Homepage(),
+        '/register': (context) => RegisterPage(),
       },
     );
   }
