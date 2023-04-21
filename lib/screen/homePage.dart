@@ -48,7 +48,18 @@ class Homepage extends StatelessWidget {
               title: const Text('Akun'),
               onTap: () {
                 if (userData != null) {
-                  Navigator.pushNamed(context, '/account', arguments: userData);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AccountDetail(
+                        profileImage:
+                            'https://picsum.photos/seed/picsum/200/300',
+                        name: userData!['name'],
+                        email: userData!['email'],
+                        userData: userData,
+                      ),
+                    ),
+                  );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -61,7 +72,16 @@ class Homepage extends StatelessWidget {
               leading: const Icon(Icons.settings),
               title: const Text('Pengaturan'),
               onTap: () {
-                // navigasi ke halaman pengaturan
+                if (userData != null) {
+                  print('Name: ${userData!['name']}');
+                  print('Desc: ${userData!['desc']}');
+                  print(userData);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('User data tidak lengkap atau kosong')),
+                  );
+                }
               },
             ),
             const Divider(),

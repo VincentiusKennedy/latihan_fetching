@@ -1,10 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:latihan_post/API/auth_repo.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -19,48 +16,40 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   String? _errorMessage;
 
+  late final AuthRepository _authRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    _authRepository = AuthRepository(
+      apiUrl: Platform.isAndroid
+          ? 'http://192.168.1.2:3000'
+          : 'http://localhost:3000',
+    );
+  }
+
   Future<void> _login() async {
     setState(() {
       _isLoading = true;
     });
 
-    String url = Platform.isAndroid
-        ? 'http://192.168.1.2:3000'
-        : 'http://localhost:3000';
-
-    final response = await http.post(
-      Uri.parse('$url/signin'),
-      body: jsonEncode(
-        {
-          'email': _emailController.text,
-          'password': _passwordController.text,
-        },
-      ),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['data'];
-      final token = data['token'];
+    try {
+      final token = await _authRepository.signIn(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
 
       // Menampilkan token di console
       print('Token: $token');
 
-      // Save token to shared preferences
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token);
-
       Navigator.pushReplacementNamed(context, '/homePage', arguments: token);
-    } else {
-      final message = jsonDecode(response.body)['message'];
+    } catch (e) {
       setState(() {
-        _errorMessage = message;
+        _errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
       });
     }
   }

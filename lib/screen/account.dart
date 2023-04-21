@@ -7,13 +7,15 @@ import 'package:http/http.dart' as http;
 class AccountDetail extends StatefulWidget {
   final String profileImage;
   final String name;
-  final String dateOfBirth;
+  final String email;
+  final Map<String, dynamic>? userData;
 
   const AccountDetail({
     Key? key,
     required this.profileImage,
     required this.name,
-    required this.dateOfBirth,
+    required this.email,
+    this.userData,
   }) : super(key: key);
 
   @override
@@ -88,14 +90,24 @@ class _AccountDetailState extends State<AccountDetail> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 24),
               Text(
-                'Tanggal Lahir: ${widget.dateOfBirth}',
+                'Desc: ${widget.userData?['desc']}',
                 style: const TextStyle(
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(height: 24),
+              Text(
+                'Email: ${widget.userData?['email']}',
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              TextButton(
+                  onPressed: () {
+                    print(widget.userData);
+                  },
+                  child: Text('CHECK DATA')),
               ElevatedButton(
                 onPressed: uploadImage,
                 child: const Text('Simpan Gambar'),
