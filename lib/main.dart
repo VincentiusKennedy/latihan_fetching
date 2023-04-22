@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:latihan_post/API/auth_repo.dart';
-import 'package:latihan_post/screen/homePage.dart';
+import 'package:latihan_post/screen/home_page.dart';
 import 'package:latihan_post/screen/loginPage.dart';
 import 'package:latihan_post/screen/registerPage.dart';
 import 'package:latihan_post/screen/todoAdd.dart';
@@ -13,13 +13,15 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
   Widget? initialScreen;
+  Map<String, dynamic> userData;
 
   String url =
       Platform.isAndroid ? 'http://192.168.1.2:3000' : 'http://localhost:3000';
+
+  userData = await checkToken(token!, url);
   if (token != null) {
     try {
-      Map<String, dynamic> userData =
-          await checkToken(token, url); // tambahkan argumen url
+      // tambahkan argumen url
       if (userData.isNotEmpty) {
         initialScreen = Homepage(userData: userData);
         print(userData);
@@ -36,14 +38,25 @@ void main() async {
     initialScreen = LoginPage();
   }
 
-  runApp(MyApp(initialScreen: initialScreen));
+  runApp(MyApp(
+    initialScreen: initialScreen,
+    token: token,
+    userData: userData,
+  ));
 }
 
 class MyApp extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final Widget initialScreen;
+  final String? token;
+  Map<String, dynamic>? userData;
 
-  MyApp({Key? key, required this.initialScreen}) : super(key: key);
+  MyApp(
+      {Key? key,
+      required this.initialScreen,
+      required this.token,
+      this.userData})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +69,10 @@ class MyApp extends StatelessWidget {
         '/': (context) => initialScreen,
         '/addTodo': (context) => const todoAdd(),
         '/login': (context) => LoginPage(),
-        '/homePage': (context) => Homepage(),
+        '/homePage': (context) => Homepage(
+              token: token,
+              userData: userData,
+            ),
         '/register': (context) => RegisterPage(),
       },
     );

@@ -1,20 +1,28 @@
-// part of 'user_bloc.dart';
+part of 'user_bloc.dart';
 
-// abstract class UserEvent extends Equatable {
-//   const UserEvent();
+abstract class UserEvent extends Equatable {
+  const UserEvent();
 
-//   @override
-//   List<Object> get props => [];
-// }
+  @override
+  List<Object> get props => [];
+}
 
-// class LoginEvent extends UserEvent {
-//   final String email;
-//   final String password;
+class UserCheckLoginEvent extends UserEvent {}
 
-//   LoginEvent({required this.email, required this.password});
+class UserLoginEvent extends UserEvent {
+  final String email;
+  final String password;
 
-//   @override
-//   List<Object> get props => [email, password];
-// }
+  const UserLoginEvent({
+    required this.email,
+    required this.password,
+  });
 
-// class LogoutEvent extends UserEvent {}
+  @override
+  List<Object> get props => [email, password];
+
+  @override
+  String toString() => 'UserLoginEvent { email: $email, password: $password }';
+}
+
+class UserLogoutEvent extends UserEvent {}
