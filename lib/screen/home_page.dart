@@ -1,18 +1,28 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:latihan_post/API/auth_repo.dart';
 import 'package:latihan_post/screen/account.dart';
 import 'package:latihan_post/screen/loginPage.dart';
 import 'package:latihan_post/screen/todoList.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+getPref() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs;
+}
+
 class Homepage extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  final String? token;
-  final Map<String, dynamic>? userData; // add the userData parameter
 
-  Homepage({Key? key, this.token, this.userData}) : super(key: key);
+  String url =
+      Platform.isAndroid ? 'http://192.168.1.6:3000' : 'http://localhost:3000';
+
+  Homepage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var userData = checkToken(getPref().getString('token'), url); //
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Flutter App'),

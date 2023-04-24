@@ -7,7 +7,7 @@ import 'package:latihan_post/model/me_model.dart';
 
 class ApiService {
   final String _baseUrl =
-      Platform.isAndroid ? 'http://192.168.1.2:3000' : 'http://localhost:3000';
+      Platform.isAndroid ? 'http://192.168.1.6:3000' : 'http://localhost:3000';
   static const String _urlGetUser = "/me";
 
   Future<String> login(String email, String password) async {

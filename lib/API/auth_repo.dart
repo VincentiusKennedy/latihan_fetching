@@ -32,7 +32,7 @@ class AuthRepository {
 
       // Check token validity
       String url = Platform.isAndroid
-          ? 'http://192.168.1.2:3000'
+          ? 'http://192.168.1.6:3000'
           : 'http://localhost:3000';
       final userData = await checkToken(token, url);
 
@@ -44,7 +44,7 @@ class AuthRepository {
   }
 }
 
-Future<Map<String, dynamic>> checkToken(String token, String url) async {
+checkToken(String? token, String url) async {
   final response = await http
       .get(Uri.parse('$url/me'), headers: {'Authorization': 'Bearer $token'});
 

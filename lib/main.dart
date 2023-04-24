@@ -16,14 +16,14 @@ void main() async {
   Map<String, dynamic> userData;
 
   String url =
-      Platform.isAndroid ? 'http://192.168.1.2:3000' : 'http://localhost:3000';
+      Platform.isAndroid ? 'http://192.168.1.6:3000' : 'http://localhost:3000';
 
-  userData = await checkToken(token!, url);
+  userData = await checkToken(token == null ? "" : token, url);
   if (token != null) {
     try {
       // tambahkan argumen url
       if (userData.isNotEmpty) {
-        initialScreen = Homepage(userData: userData);
+        initialScreen = Homepage();
         print(userData);
       } else {
         initialScreen = LoginPage();
@@ -69,10 +69,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => initialScreen,
         '/addTodo': (context) => const todoAdd(),
         '/login': (context) => LoginPage(),
-        '/homePage': (context) => Homepage(
-              token: token,
-              userData: userData,
-            ),
+        '/homePage': (context) => Homepage(),
         '/register': (context) => RegisterPage(),
       },
     );
